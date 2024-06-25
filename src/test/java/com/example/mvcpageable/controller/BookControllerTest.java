@@ -1,15 +1,13 @@
 package com.example.mvcpageable.controller;
 
 import com.example.mvcpageable.model.Book;
-import com.example.mvcpageable.repository.BookRepository;
 import com.example.mvcpageable.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,10 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookControllerTest.class)
 class BookControllerTest {
 
-    @Mock
-    BookRepository bookRepository;
-
-    @InjectMocks
+    @MockBean
     BookService bookService;
 
     @Autowired
@@ -57,6 +52,17 @@ class BookControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content.length()").value(listBooks.size()));
+    }
+
+    @Test
+    void getBooksWithPageAndSize() throws Exception {
+        Page<Book> bookPage = new PageImpl<>(listBooks.subList(0, 2), PageRequest.of(0, 2), listBooks.size());
+        when(bookService.getBooks(PageRequest.of(0, 2))).thenReturn(bookPage);
+
+        mockMvc.perform(get("/books?page=0&size=2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(2));
     }
 
 }

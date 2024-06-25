@@ -18,7 +18,7 @@ public class BookController {
 
     private BookService bookService;
 
-    @GetMapping
+    @GetMapping()
     public ResponseEntity<Page<Book>> getBooks(Pageable pageable) {
         return ResponseEntity.ok(bookService.getBooks(pageable));
     }
@@ -28,12 +28,12 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBook(id));
     }
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<Book> createBook(@RequestBody Book book) throws URISyntaxException {
         return ResponseEntity.created(new URI("/books/" + book.getId())).body(bookService.updateOrCreateBook(book));
     }
 
-    @PutMapping
+    @PutMapping()
     public ResponseEntity<Book> updateBook(@RequestBody Book book) {
         return ResponseEntity.ok().body(bookService.updateOrCreateBook(book));
     }
