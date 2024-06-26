@@ -11,17 +11,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(BookControllerTest.class)
+@WebMvcTest(BookController.class)
 class BookControllerTest {
 
     @MockBean
@@ -47,7 +49,7 @@ class BookControllerTest {
     @Test
     void getBooksDefaultPageable() throws Exception {
         Page<Book> bookPage = new PageImpl<>(listBooks, PageRequest.of(0,10), listBooks.size());
-        when(bookService.getBooks(PageRequest.of(0, 10))).thenReturn(bookPage);
+        when(bookService.getBooks(any(Pageable.class))).thenReturn(bookPage);
         mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
